@@ -1,2 +1,5 @@
 transformers>=4.45.1
-huggingface_hub
+accelerate>=0.34.2
+bitsandbytes>=0.44.0
+huggingface-hub>=0.25.1
+torch>=2.4.1
