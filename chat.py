@@ -12,11 +12,11 @@ if __name__ == '__main__':
         bnb_4bit_compute_dtype=torch.bfloat16
     )
     model = AutoModelForCausalLM.from_pretrained(
-        f"./download/{repo}",
+        f"./local/download/model/{repo}",
         quantization_config=quantization_config
     )
-    model.load_adapter(f"./trained/{repo}")
-    tokenizer = AutoTokenizer.from_pretrained(f"./download/{repo}")
+    model.load_adapter(f"./local/trained/{repo}")
+    tokenizer = AutoTokenizer.from_pretrained(f"./local/download/model/{repo}")
     pipe = pipeline(
         task="text-generation", max_new_tokens=1000,
         model=model, tokenizer=tokenizer,
