@@ -36,7 +36,7 @@ if __name__ == '__main__':
     dataset = dataset.train_test_split(test_size=0.1)
 
     sft_config = SFTConfig(
-        output_dir=f"./local/trained/training/{repo}",
+        output_dir=f"./local/trained/{repo}",
         save_steps=20000000,
         max_seq_length=500,
         per_device_train_batch_size=10,
