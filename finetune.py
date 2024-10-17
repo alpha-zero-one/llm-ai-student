@@ -38,8 +38,9 @@ if __name__ == '__main__':
     sft_config = SFTConfig(
         output_dir=f"./local/trained/training/{repo}",
         save_only_model=True,
-        per_device_train_batch_size=32,
-        per_device_eval_batch_size=32,
+        max_seq_length=500,
+        per_device_train_batch_size=10,
+        per_device_eval_batch_size=10,
         num_train_epochs=10,
         eval_strategy="epoch",
         learning_rate=2e-5
@@ -49,7 +50,6 @@ if __name__ == '__main__':
         train_dataset=dataset["train"],
         eval_dataset=dataset["test"],
         peft_config=lora_config,
-        max_seq_length=1000,
         args=sft_config
     )
 
