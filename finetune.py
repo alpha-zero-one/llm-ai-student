@@ -41,7 +41,7 @@ if __name__ == '__main__':
         max_seq_length=500,
         per_device_train_batch_size=10,
         per_device_eval_batch_size=10,
-        num_train_epochs=10,
+        num_train_epochs=4,
         eval_strategy="epoch",
         learning_rate=2e-5
     )
