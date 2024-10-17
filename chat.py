@@ -4,6 +4,7 @@ from transformers import pipeline, BitsAndBytesConfig, AutoModelForCausalLM, Aut
 if __name__ == '__main__':
 
     repo = "unsloth/Llama-3.2-1B-Instruct"
+
     quantization_config = BitsAndBytesConfig(
         load_in_4bit=True,
         bnb_4bit_use_double_quant=True,
@@ -17,7 +18,7 @@ if __name__ == '__main__':
     model.load_adapter(f"./trained/{repo}")
     tokenizer = AutoTokenizer.from_pretrained(f"./download/{repo}")
     pipe = pipeline(
-        task="text-generation", max_new_tokens=100,
+        task="text-generation", max_new_tokens=1000,
         model=model, tokenizer=tokenizer,
         device_map="auto"
     )
@@ -25,7 +26,7 @@ if __name__ == '__main__':
     chat = [
         {
             "role": "system",
-            "content": "You are a friendly pirate."
+            "content": "Du bist ein Student und studierst Informatik."
         }
     ]
 
