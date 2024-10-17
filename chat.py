@@ -14,6 +14,7 @@ if __name__ == '__main__':
         f"./download/{repo}",
         quantization_config=quantization_config
     )
+    model.load_adapter(f"./trained/{repo}")
     tokenizer = AutoTokenizer.from_pretrained(f"./download/{repo}")
     pipe = pipeline(
         task="text-generation", max_new_tokens=100,
