@@ -4,7 +4,6 @@ from transformers import pipeline, BitsAndBytesConfig, AutoModelForCausalLM, Aut
 if __name__ == '__main__':
 
     repo = "unsloth/Llama-3.2-1B-Instruct"
-
     quantization_config = BitsAndBytesConfig(
         load_in_4bit=True,
         bnb_4bit_use_double_quant=True,
@@ -23,28 +22,30 @@ if __name__ == '__main__':
         device_map="auto"
     )
 
-    chat = [
-        {
-            "role": "system",
-            "content": "Du bist ein Student und studierst Informatik."
-        }
-    ]
-
     running = True
+    aufgabe = input("Aufgabe > ")
+    code = input("Code > ")
     while running:
-        message = input("> ")
+        bemerkung = input("> ")
 
-        if message == "/bye":
+        if bemerkung == "/bye":
             running = False
         else:
-            chat.append({
-                "role": "user",
-                "content": f"{message}"
-            })
+            message = f'Aufgabe:\n{aufgabe}\n\nCode:\n{code}\n\nBemerkung:{bemerkung}\n\nVerbesserung:\n'
+            chat = [
+                {
+                    "role": "system",
+                    "content": "Du bist ein neuer Student und studierst Informatik."
+                },
+                {
+                    "role": "user",
+                    "content": message
+                }
+            ]
 
             response = pipe(chat)
             chat = response[-1]["generated_text"]
-            answer = chat[-1]["content"]
+            code = chat[-1]["content"]
 
-            print(f"AI: {answer}")
+            print(f"AI: {code}")
             print()
