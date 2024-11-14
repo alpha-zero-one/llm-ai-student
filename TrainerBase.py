@@ -1,5 +1,5 @@
 
-from transformers import AutoModelForCausalLM, BitsAndBytesConfig, AutoTokenizer
+from transformers import AutoModelForCausalLM, BitsAndBytesConfig
 from peft import LoraConfig, get_peft_model
 import torch
 from datasets import load_dataset
@@ -29,6 +29,9 @@ class TrainerBase:
         training_path,
         dataset_path,
         max_length,
+        lora_rank,
+        lora_alpha,
+        lora_dropout,
         learning_rate,
         num_epochs
     ):
@@ -38,6 +41,9 @@ class TrainerBase:
         self.training_path = training_path
         self.dataset_path = dataset_path
         self.max_length = max_length
+        self.lora_rank = lora_rank
+        self.lora_alpha = lora_alpha
+        self.lora_dropout = lora_dropout
         self.learning_rate = learning_rate
         self.num_epochs = num_epochs
 
@@ -58,9 +64,9 @@ class TrainerBase:
 
         modules = find_all_linear_names(model)
         lora_config = LoraConfig(
-            r=16,
-            lora_alpha=32,
-            lora_dropout=0.05,
+            r=self.lora_rank,
+            lora_alpha=self.lora_alpha,
+            lora_dropout=self.lora_dropout,
             bias="none",
             task_type="CAUSAL_LM",
             target_modules=modules
@@ -89,7 +95,7 @@ class TrainerBase:
             num_train_epochs=self.num_epochs,
             gradient_accumulation_steps=2,
             warmup_steps=10,
-            eval_strategy="epoch",
+            eval_strategy="steps",
             fp16=False,
             bf16=True
         )
