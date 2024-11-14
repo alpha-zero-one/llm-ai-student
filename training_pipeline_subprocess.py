@@ -3,7 +3,6 @@ import logging
 
 from TrainerBase import TrainerBase
 from TrainerInstruct import TrainerInstruct
-from local.snippets.finetune_snippet import base_model
 
 if __name__ == '__main__':
 
@@ -67,7 +66,7 @@ if __name__ == '__main__':
                 num_epochs
             )
         case _:
-            raise ValueError(f'Value "{base_model}" is illegal. Value of model_type must be "base" or "instruct".')
+            raise ValueError(f'Value "{model_type}" is illegal. Value of model_type must be "base" or "instruct".')
 
     try:
         trainer.train()
