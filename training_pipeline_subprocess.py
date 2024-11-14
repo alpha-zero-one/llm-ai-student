@@ -74,7 +74,17 @@ if __name__ == '__main__':
             )
         case 'instruct':
             trainer = TrainerInstruct(
-
+                model_name,
+                model_path,
+                trained_model_path,
+                training_path,
+                dataset_path,
+                max_length,
+                lora_rank,
+                lora_alpha,
+                lora_dropout,
+                learning_rate,
+                num_epochs
             )
         case _:
             raise ValueError(f'Value "{model_type}" is illegal. Value of model_type must be "base" or "instruct".')
