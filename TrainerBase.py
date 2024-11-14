@@ -56,8 +56,6 @@ class TrainerBase:
             attn_implementation="eager"
         )
 
-        tokenizer = AutoTokenizer.from_pretrained(self.model_name, padding_side='right')
-
         modules = find_all_linear_names(model)
         lora_config = LoraConfig(
             r=16,
@@ -97,7 +95,6 @@ class TrainerBase:
         )
         trainer = SFTTrainer(
             model=peft_model,
-            tokenizer=tokenizer,
             train_dataset=dataset["train"],
             eval_dataset=dataset["test"],
             peft_config=lora_config,
