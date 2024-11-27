@@ -19,6 +19,16 @@ if __name__ == '__main__':
     with open('training_config.json', 'r') as file:
         training_config = json.load(file)
 
+    progress_bar_counter = 0
+    progress_bar_maximum = 1
+    progress_bar_maximum *= len(training_config["base_model"])
+    progress_bar_maximum *= len(training_config["code_type"])
+    progress_bar_maximum *= len(training_config["solution_type"])
+    progress_bar_maximum *= len(training_config["prune_type"])
+    progress_bar_maximum *= len(training_config["lora_dropout"])
+    progress_bar_maximum *= len(training_config["lora_rank_alpha"])
+    progress_bar_maximum *= len(training_config["learning_rate"])
+
     dataset_name = training_config["dataset_name"]
     for base_model in training_config["base_model"]:
         for code_type in training_config["code_type"]:
@@ -39,6 +49,8 @@ if __name__ == '__main__':
                                                 f"learning_rate/{learning_rate}/num_epochs/{num_epochs}")
                                 dataset_path = f"./local/download/dataset/{dataset_name}/{code_type}/{solution_type}/{prune_type}/dataset.jsonl"
 
+                                progress_bar_counter += 1
+                                print(f'Progress: {progress_bar_counter}/{progress_bar_maximum}')
                                 if not os.path.exists(f'{trained_path}/error'):
                                     os.makedirs(f'{trained_path}/error')
 
