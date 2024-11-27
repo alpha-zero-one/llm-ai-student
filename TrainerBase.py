@@ -58,8 +58,7 @@ class TrainerBase:
         model = AutoModelForCausalLM.from_pretrained(
             self.model_path,
             quantization_config=quantization_config,
-            device_map="auto",
-            attn_implementation="eager"
+            device_map="auto"
         )
 
         modules = find_all_linear_names(model)
@@ -85,6 +84,9 @@ class TrainerBase:
         sft_config = SFTConfig(
             output_dir=self.training_path,
             save_steps=1000,
+            #eval_strategy="steps",
+            #eval_steps=50,
+            dataset_text_field="text",
             max_seq_length=self.max_length,
             per_device_train_batch_size=1,
             per_device_eval_batch_size=1,
@@ -95,10 +97,10 @@ class TrainerBase:
             num_train_epochs=self.num_epochs,
             gradient_accumulation_steps=2,
             warmup_steps=10,
-            eval_strategy="steps",
             fp16=False,
-            bf16=True
+            bf16=False
         )
+
         trainer = SFTTrainer(
             model=peft_model,
             train_dataset=dataset["train"],
