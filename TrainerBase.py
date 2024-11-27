@@ -83,7 +83,7 @@ class TrainerBase:
 
         sft_config = SFTConfig(
             output_dir=self.training_path,
-            save_steps=1000,
+            save_steps=20000,
             #eval_strategy="steps",
             #eval_steps=50,
             dataset_text_field="text",
