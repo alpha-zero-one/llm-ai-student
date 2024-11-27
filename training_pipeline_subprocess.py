@@ -34,7 +34,7 @@ if __name__ == '__main__':
     num_epochs = args.num_epochs
 
     logging.basicConfig(
-        filename=f"{args.trained_model_path}/error/log.txt",
+        filename=f"{args.trained_path}/error/log.txt",
         encoding = 'utf-8',
         level=logging.DEBUG,
         format="%(asctime)s - %(levelname)s - %(message)s"
