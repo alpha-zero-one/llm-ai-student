@@ -1,6 +1,6 @@
 import json
 import os
-import time
+import datetime
 import subprocess
 import logging
 import sys
@@ -52,7 +52,9 @@ if __name__ == '__main__':
 
                                 progress_bar_counter += 1
                                 print(f'Progress: {progress_bar_counter}/{progress_bar_maximum}')
-                                print(f'Start: {time.time()}')
+                                datetime_now = datetime.datetime.now()
+                                time = datetime_now.strftime("%Y-%m-%d %H:%M:%S")
+                                print(f'Start: {time}')
                                 if not os.path.exists(f'{trained_path}/error'):
                                     os.makedirs(f'{trained_path}/error')
 
@@ -81,4 +83,6 @@ if __name__ == '__main__':
                                         logging.error(f"Error output:\n{e.stderr}")
                                         sys.exit(1)
 
-                                print(f'End: {time.time()}')
+                                datetime_now = datetime.datetime.now()
+                                time = datetime_now.strftime("%Y-%m-%d %H:%M:%S")
+                                print(f'End: {time}')
