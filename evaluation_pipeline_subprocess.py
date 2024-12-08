@@ -10,7 +10,7 @@ if __name__ == '__main__':
     argument_parser.add_argument('--model_name', type=str,  required=True)
     argument_parser.add_argument('--model_type', type=str,  required=True)
     argument_parser.add_argument('--model_path', type=str, required=True)
-    argument_parser.add_argument('--use_adapter', type=bool, required=True)
+    argument_parser.add_argument('--use_adapter', action="store_true")
     argument_parser.add_argument('--trained_path', type=str, required=True)
     argument_parser.add_argument('--evaluation_path', type=str, required=True)
     argument_parser.add_argument('--evaluationset_path', type=str, required=True)
@@ -26,25 +26,26 @@ if __name__ == '__main__':
     evaluationset_path = args.evaluationset_path
     max_length = args.max_length
 
-    logging.basicConfig(
-        filename=f"{args.trained_path}/error/evaluation_log.txt",
-        encoding = 'utf-8',
-        level=logging.DEBUG,
-        format="%(asctime)s - %(levelname)s - %(message)s"
-    )
+    if use_adapter:
+        logging.basicConfig(
+            filename=f"{args.trained_path}/error/evaluation_log.txt",
+            encoding = 'utf-8',
+            level=logging.DEBUG,
+            format="%(asctime)s - %(levelname)s - %(message)s"
+        )
 
-    logging.info(
-        f'Configuration>\n'
-        f'model_name: {model_name}\n'
-        f'model_type: {model_type}\n'
-        f'model_path: {model_path}\n'
-        f'model_path: {use_adapter}\n'
-        f'trained_model_path: {trained_model_path}\n'
-        f'evaluation_path: {evaluation_path}\n'
-        f'evaluationset_path: {evaluationset_path}\n'
-        f'max_length: {max_length}\n'
-        f'<Configuration\n'
-    )
+        logging.info(
+            f'Configuration>\n'
+            f'model_name: {model_name}\n'
+            f'model_type: {model_type}\n'
+            f'model_path: {model_path}\n'
+            f'model_path: {use_adapter}\n'
+            f'trained_model_path: {trained_model_path}\n'
+            f'evaluation_path: {evaluation_path}\n'
+            f'evaluationset_path: {evaluationset_path}\n'
+            f'max_length: {max_length}\n'
+            f'<Configuration\n'
+        )
 
     match model_type:
         case 'base':
@@ -73,5 +74,6 @@ if __name__ == '__main__':
     try:
         evaluate.evaluate()
     except:
-        logging.exception('Error output:')
-        raise
+        if use_adapter:
+            logging.exception('Error output:')
+            raise
