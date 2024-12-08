@@ -1,0 +1,26 @@
+{
+    "base_evaluationset": [
+        "uni/set0"
+    ],
+    "base_dataset": [
+        "uni/student/markdown/with_solution/no_pruning",
+        "uni/student/markdown/without_solution/no_pruning"
+    ],
+    "base_model": [
+        "Qwen/Qwen2.5-Coder-7B",
+        "unsloth/Llama-3.2-3B"
+    ],
+    "instruct_evaluationset": [],
+    "instruct_dataset": [],
+    "instruct_model": [],
+    "max_length": 2048,
+    "lora_dropout" : [0.1],
+    "lora_rank_alpha": [
+        {
+            "lora_rank": 16,
+            "lora_alpha": 16
+        }
+    ],
+    "learning_rate": [0.000001, 0.000005, 0.00001, 0.00005, 0.0001, 0.0005],
+    "num_epochs": 2
+}

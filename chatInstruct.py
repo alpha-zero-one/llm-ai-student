@@ -3,7 +3,12 @@ from transformers import pipeline, BitsAndBytesConfig, AutoModelForCausalLM, Aut
 
 if __name__ == '__main__':
 
-    repo = "unsloth/Llama-3.2-1B-Instruct"
+    use_adapter = False
+
+    #model_path = "./local/download/model/unsloth/Llama-3.2-3B"
+    #adapter_path = "./local/trained/unsloth/Llama-3.2-3B/model"
+    model_path = "./local/download/model/Qwen/Qwen2.5-Coder-7B"
+    adapter_path = "./local/trained/Qwen/Qwen2.5-Coder-7B/model"
 
     quantization_config = BitsAndBytesConfig(
         load_in_4bit=True,
@@ -11,15 +16,29 @@ if __name__ == '__main__':
         bnb_4bit_quant_type="nf4",
         bnb_4bit_compute_dtype=torch.bfloat16
     )
+
     model = AutoModelForCausalLM.from_pretrained(
-        f"./local/download/model/{repo}",
-        quantization_config=quantization_config
+        model_path,
+        quantization_config=quantization_config,
+        device_map="auto"
     )
-    model.load_adapter(f"./local/trained/{repo}")
-    tokenizer = AutoTokenizer.from_pretrained(f"./local/download/model/{repo}")
+
+    if use_adapter:
+        model.load_adapter(adapter_path)
+
+    '''
+    generation_config = model.generation_config
+    generation_config.max_new_tokens=300
+    generation_config.do_sample=True
+    generation_config.temperature=1.0
+    '''
+
+    tokenizer = AutoTokenizer.from_pretrained(model_path)
+
     pipe = pipeline(
-        task="text-generation", max_new_tokens=1000,
-        model=model, tokenizer=tokenizer,
+        task="text-generation",
+        model=model,
+        tokenizer=tokenizer,
         device_map="auto"
     )
 
@@ -42,7 +61,7 @@ if __name__ == '__main__':
                 "content": f"{message}"
             })
 
-            response = pipe(chat)
+            response = pipe(chat, max_new_tokens=300)
             chat = response[-1]["generated_text"]
             answer = chat[-1]["content"]
 
