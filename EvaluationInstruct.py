@@ -57,11 +57,11 @@ class EvaluationInstruct:
             device_map="auto"
         )
 
-        with open(f"{self.evaluationset_path}", 'r') as file:
+        with open(self.evaluationset_path, 'r') as file:
             input_text = json.load(file)
 
         response = pipe(input_text, max_new_tokens=300)
 
-        os.makedirs(self.evaluation_path, exist_ok=True)
-        with open(f"{self.evaluation_path}/evaluation.json", 'w') as file:
+        os.makedirs(os.path.dirname(self.evaluation_path), exist_ok=True)
+        with open(self.evaluation_path, 'w') as file:
             json.dump(response, file, indent=4)

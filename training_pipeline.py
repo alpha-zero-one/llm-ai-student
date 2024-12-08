@@ -53,19 +53,20 @@ if __name__ == '__main__':
                             os.makedirs(f'{trained_path}/error')
 
                             try:
-                                result = subprocess.run([
-                                    "python", "training_pipeline_subprocess.py",
-                                     "--model_name", f"{base_model}",
-                                     "--model_type", f"{model_type}",
-                                     "--model_path", f"{model_path}",
-                                     "--trained_path", f"{trained_path}",
-                                     "--dataset_path", f"{dataset_path}",
-                                     "--max_length", f"{max_length}",
-                                     "--lora_rank", f"{lora_rank}",
-                                     "--lora_alpha", f"{lora_alpha}",
-                                     "--lora_dropout", f"{lora_dropout}",
-                                     "--learning_rate", f"{learning_rate}",
-                                     "--num_epochs", f"{num_epochs}"
+                                result = subprocess.run(
+                                    [
+                                        "python", "training_pipeline_subprocess.py",
+                                         "--model_name", f"{base_model}",
+                                         "--model_type", f"{model_type}",
+                                         "--model_path", f"{model_path}",
+                                         "--trained_path", f"{trained_path}",
+                                         "--dataset_path", f"{dataset_path}",
+                                         "--max_length", f"{max_length}",
+                                         "--lora_rank", f"{lora_rank}",
+                                         "--lora_alpha", f"{lora_alpha}",
+                                         "--lora_dropout", f"{lora_dropout}",
+                                         "--learning_rate", f"{learning_rate}",
+                                         "--num_epochs", f"{num_epochs}"
                                     ],
                                     capture_output=True,
                                     text=True,

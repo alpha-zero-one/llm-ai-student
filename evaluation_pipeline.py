@@ -12,7 +12,7 @@ if __name__ == '__main__':
 
     logging.basicConfig(
         filename='./local/log/evaluation_pipeline_log.txt',
-        encoding = 'utf-8',
+        encoding='utf-8',
         level=logging.DEBUG,
         format="%(asctime)s - %(levelname)s - %(message)s"
     )
@@ -30,10 +30,9 @@ if __name__ == '__main__':
             model_type = "base"
             model_path = f"./local/download/model/{base_model}"
             max_length = training_config["max_length"]
-            use_adapter = False
-            trained_path = ""
-            evaluation_path = f"./local/untrained/{base_model}/evaluation/{base_evaluationset}"
-            evaluationset_path = f"./local/download/evaluationset/{base_evaluationset}"
+            trained_path = f"./local/untrained/{base_model}"
+            evaluation_path = f"./local/untrained/{base_model}/evaluation/{base_evaluationset}/evaluation.json"
+            evaluationset_path = f"./local/download/evaluationset/{base_evaluationset}/evaluationset.json"
 
             progress_bar_counter += 1
             print(f'Progress: {progress_bar_counter}/{progress_bar_maximum}')
@@ -41,17 +40,24 @@ if __name__ == '__main__':
             time = datetime_now.strftime("%Y-%m-%d %H:%M:%S")
             print(f'Start: {time}')
 
+            if not os.path.exists(f'{trained_path}/error'):
+                os.makedirs(f'{trained_path}/error')
+
+            if not os.path.exists(f'{trained_path}/evaluation'):
+                os.makedirs(f'{trained_path}/evaluation')
+
             try:
-                result = subprocess.run([
-                    "python", "evaluation_pipeline_subprocess.py",
-                    "--model_name", f"{base_model}",
-                    "--model_type", f"{model_type}",
-                    "--model_path", f"{model_path}",
-                    "--trained_path", f"{trained_path}",
-                    "--evaluation_path", f"{evaluation_path}",
-                    "--evaluationset_path", f"{evaluationset_path}",
-                    "--max_length", f"{max_length}"
-                ],
+                result = subprocess.run(
+                    [
+                        "python", "evaluation_pipeline_subprocess.py",
+                        "--model_name", f"{base_model}",
+                        "--model_type", f"{model_type}",
+                        "--model_path", f"{model_path}",
+                        "--trained_path", f"{trained_path}",
+                        "--evaluation_path", f"{evaluation_path}",
+                        "--evaluationset_path", f"{evaluationset_path}",
+                        "--max_length", f"{max_length}"
+                    ],
                     capture_output=True,
                     text=True,
                     check=True
@@ -65,7 +71,6 @@ if __name__ == '__main__':
             datetime_now = datetime.datetime.now()
             time = datetime_now.strftime("%Y-%m-%d %H:%M:%S")
             print(f'End: {time}')
-
 
     progress_bar_counter = 0
     progress_bar_maximum = 1
@@ -89,11 +94,10 @@ if __name__ == '__main__':
                             model_path = f"./local/download/model/{base_model}"
                             max_length = training_config["max_length"]
                             num_epochs = training_config["num_epochs"]
-                            use_adapter = True
                             trained_path = (f"./local/trained/{base_model}/{base_dataset}/"
                                             f"lora_rank/{lora_rank}/lora_alpha/{lora_alpha}/lora_dropout/{lora_dropout}/"
                                             f"learning_rate/{learning_rate}/num_epochs/{num_epochs}")
-                            evaluation_path = f"{trained_path}/evaluation/{base_evaluationset}"
+                            evaluation_path = f"{trained_path}/evaluation/{base_evaluationset}/evaluation.json"
                             evaluationset_path = f"./local/download/evaluationset/{base_evaluationset}/evaluationset.json"
 
                             progress_bar_counter += 1
@@ -102,9 +106,16 @@ if __name__ == '__main__':
                             time = datetime_now.strftime("%Y-%m-%d %H:%M:%S")
                             print(f'Start: {time}')
 
+                            if not os.path.exists(f'{trained_path}/error'):
+                                os.makedirs(f'{trained_path}/error')
+
+                            if not os.path.exists(f'{trained_path}/evaluation'):
+                                os.makedirs(f'{trained_path}/evaluation')
+
                             try:
-                                result = subprocess.run([
-                                    "python", "evaluation_pipeline_subprocess.py",
+                                result = subprocess.run(
+                                    [
+                                        "python", "evaluation_pipeline_subprocess.py",
                                         "--model_name", f"{base_model}",
                                         "--model_type", f"{model_type}",
                                         "--model_path", f"{model_path}",
