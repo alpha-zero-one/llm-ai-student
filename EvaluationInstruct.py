@@ -57,7 +57,7 @@ class EvaluationInstruct:
             device_map="auto"
         )
 
-        with open(self.evaluationset_path, 'r') as file:
+        with open(f"{self.evaluationset_path}", 'r') as file:
             input_text = json.load(file)
 
         response = pipe(input_text, max_new_tokens=300)
