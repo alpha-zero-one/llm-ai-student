@@ -17,7 +17,7 @@ if __name__ == '__main__':
         format="%(asctime)s - %(levelname)s - %(message)s"
     )
 
-    with open('training_config.json', 'r') as file:
+    with open('./config/training_config.json', 'r') as file:
         training_config = json.load(file)
 
     progress_bar_counter = 0
@@ -55,7 +55,7 @@ if __name__ == '__main__':
                             try:
                                 result = subprocess.run(
                                     [
-                                        "python", "training_pipeline_subprocess.py",
+                                        "python", "./src/single_gpu/training/training_pipeline_subprocess.py",
                                          "--model_name", f"{base_model}",
                                          "--model_type", f"{model_type}",
                                          "--model_path", f"{model_path}",
