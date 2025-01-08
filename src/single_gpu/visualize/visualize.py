@@ -90,7 +90,7 @@ def base_to_html(path, messages):
 
 if __name__ == '__main__':
 
-    with open('training_config.json', 'r') as file:
+    with open('./config/training_config.json', 'r') as file:
         training_config = json.load(file)
 
     for base_evaluationset in training_config["base_evaluationset"]:
