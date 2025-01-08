@@ -1,22 +1,8 @@
-
 from transformers import AutoModelForCausalLM, BitsAndBytesConfig
 from peft import LoraConfig, get_peft_model
 import torch
 from datasets import load_dataset
 from trl import SFTTrainer, SFTConfig
-import bitsandbytes as bnb
-
-
-def find_all_linear_names(model):
-    cls = bnb.nn.Linear4bit
-    lora_module_names = set()
-    for name, module in model.named_modules():
-        if isinstance(module, cls):
-            names = name.split('.')
-            lora_module_names.add(names[0] if len(names) == 1 else names[-1])
-    if 'lm_head' in lora_module_names:
-        lora_module_names.remove('lm_head')
-    return list(lora_module_names)
 
 
 class TrainerBase:
@@ -54,21 +40,19 @@ class TrainerBase:
             bnb_4bit_quant_type="nf4",
             bnb_4bit_compute_dtype=torch.bfloat16
         )
-
         model = AutoModelForCausalLM.from_pretrained(
             self.model_path,
             quantization_config=quantization_config,
             device_map="auto"
         )
 
-        modules = find_all_linear_names(model)
         lora_config = LoraConfig(
             r=self.lora_rank,
             lora_alpha=self.lora_alpha,
             lora_dropout=self.lora_dropout,
             bias="none",
             task_type="CAUSAL_LM",
-            target_modules=modules
+            target_modules="all-linear"
         )
         peft_model = get_peft_model(model, lora_config)
 
@@ -100,7 +84,6 @@ class TrainerBase:
             fp16=False,
             bf16=False
         )
-
         trainer = SFTTrainer(
             model=peft_model,
             train_dataset=dataset["train"],
