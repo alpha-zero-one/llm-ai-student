@@ -67,6 +67,7 @@ class TrainerInstruct:
 
         sft_config = SFTConfig(
             output_dir=self.training_path,
+            report_to="none",
             save_steps=20000,
             #eval_strategy="steps",
             #eval_steps=50,
