@@ -57,7 +57,7 @@ if __name__ == '__main__':
                                     [
                                         "accelerate", "launch",
                                          "--config_file", "./config/fsdp_config.yaml",
-                                         "./src/single_gpu/training/training_pipeline_subprocess.py",
+                                         "./src/fsdp/training/training_pipeline_subprocess.py",
                                          "--model_name", f"{base_model}",
                                          "--model_type", f"{model_type}",
                                          "--model_path", f"{model_path}",
@@ -83,4 +83,3 @@ if __name__ == '__main__':
                         datetime_now = datetime.datetime.now()
                         time = datetime_now.strftime("%Y-%m-%d %H:%M:%S")
                         print(f'End: {time}')
-                        
