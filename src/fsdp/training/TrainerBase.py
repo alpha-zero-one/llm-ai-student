@@ -1,5 +1,6 @@
 from transformers import AutoModelForCausalLM, BitsAndBytesConfig
-from peft import LoraConfig, get_peft_model
+from peft import LoraConfig
+from accelerate import Accelerator
 import torch
 from datasets import load_dataset
 from trl import SFTTrainer, SFTConfig
@@ -34,6 +35,9 @@ class TrainerBase:
         self.num_epochs = num_epochs
 
     def train(self):
+
+        Accelerator()
+
         quantization_config = BitsAndBytesConfig(
             load_in_4bit=True,
             bnb_4bit_use_double_quant=True,
@@ -55,7 +59,6 @@ class TrainerBase:
             task_type="CAUSAL_LM",
             target_modules="all-linear"
         )
-        peft_model = get_peft_model(model, lora_config)
 
         dataset = load_dataset(
             "json",
@@ -78,25 +81,21 @@ class TrainerBase:
             per_device_eval_batch_size=1,
             packing=False,
             group_by_length=False,
-            optim="adamw_8bit",
             learning_rate=self.learning_rate,
             num_train_epochs=self.num_epochs,
             gradient_accumulation_steps=2,
             warmup_steps=10,
             fp16=False,
-            bf16=False
+            bf16=True
         )
         trainer = SFTTrainer(
-            model=peft_model,
+            model=model,
             train_dataset=dataset["train"],
             eval_dataset=dataset["test"],
             peft_config=lora_config,
             args=sft_config
         )
 
-        trainer.accelerator.print(f"{trainer.model}")
-        if hasattr(trainer.model, "print_trainable_parameters"):
-            trainer.model.print_trainable_parameters()
         if getattr(trainer.accelerator.state, "fsdp_plugin", None):
             from peft.utils.other import fsdp_auto_wrap_policy
             fsdp_plugin = trainer.accelerator.state.fsdp_plugin
