@@ -1,25 +1,12 @@
-
 from transformers import AutoModelForCausalLM, BitsAndBytesConfig
-from peft import LoraConfig, get_peft_model
+from peft import LoraConfig
+from accelerate import Accelerator
 import torch
 from datasets import load_dataset
 from trl import SFTTrainer, SFTConfig
-import bitsandbytes as bnb
 
 
-def find_all_linear_names(model):
-    cls = bnb.nn.Linear4bit
-    lora_module_names = set()
-    for name, module in model.named_modules():
-        if isinstance(module, cls):
-            names = name.split('.')
-            lora_module_names.add(names[0] if len(names) == 1 else names[-1])
-    if 'lm_head' in lora_module_names:
-        lora_module_names.remove('lm_head')
-    return list(lora_module_names)
-
-
-class TrainerBase:
+class TrainerInstruct:
 
     def __init__(
         self,
@@ -48,29 +35,30 @@ class TrainerBase:
         self.num_epochs = num_epochs
 
     def train(self):
+
+        Accelerator()
+
         quantization_config = BitsAndBytesConfig(
             load_in_4bit=True,
             bnb_4bit_use_double_quant=True,
             bnb_4bit_quant_type="nf4",
-            bnb_4bit_compute_dtype=torch.bfloat16
+            bnb_4bit_compute_dtype=torch.bfloat16,
+            bnb_4bit_quant_storage=torch.bfloat16
         )
-
         model = AutoModelForCausalLM.from_pretrained(
             self.model_path,
             quantization_config=quantization_config,
-            device_map="auto"
+            torch_dtype=torch.bfloat16
         )
 
-        modules = find_all_linear_names(model)
         lora_config = LoraConfig(
             r=self.lora_rank,
             lora_alpha=self.lora_alpha,
             lora_dropout=self.lora_dropout,
             bias="none",
             task_type="CAUSAL_LM",
-            target_modules=modules
+            target_modules="all-linear"
         )
-        peft_model = get_peft_model(model, lora_config)
 
         dataset = load_dataset(
             "json",
@@ -83,34 +71,40 @@ class TrainerBase:
 
         sft_config = SFTConfig(
             output_dir=self.training_path,
+            report_to="none",
             save_steps=20000,
             #eval_strategy="steps",
             #eval_steps=50,
-            dataset_text_field="text",
             max_seq_length=self.max_length,
             per_device_train_batch_size=1,
             per_device_eval_batch_size=1,
             packing=False,
             group_by_length=False,
-            optim="adamw_8bit",
             learning_rate=self.learning_rate,
             num_train_epochs=self.num_epochs,
             gradient_accumulation_steps=2,
             warmup_steps=10,
             fp16=False,
-            bf16=False
+            bf16=True
         )
-
         trainer = SFTTrainer(
-            model=peft_model,
+            model=model,
             train_dataset=dataset["train"],
             eval_dataset=dataset["test"],
             peft_config=lora_config,
             args=sft_config
         )
 
+        if getattr(trainer.accelerator.state, "fsdp_plugin", None):
+            from peft.utils.other import fsdp_auto_wrap_policy
+            fsdp_plugin = trainer.accelerator.state.fsdp_plugin
+            fsdp_plugin.auto_wrap_policy = fsdp_auto_wrap_policy(trainer.model)
+
         trainer.train()
-        peft_model.save_pretrained(self.trained_model_path)
+
+        if trainer.is_fsdp_enabled:
+            trainer.accelerator.state.fsdp_plugin.set_state_dict_type("FULL_STATE_DICT")
+        trainer.save_model(self.trained_model_path)
 
 # export NCCL_P2P_DISABLE=1
 # export NCCL_IB_DISABLE=1
