@@ -6,3 +6,7 @@ bitsandbytes
 huggingface-hub
 datasets
 torch
+
+openai
+pydantic
+unsloth
